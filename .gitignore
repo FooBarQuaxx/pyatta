@@ -1,6 +1,6 @@
 VyosSessionConfig/*.pyc
 bin/
-lib/
+lib/*/*.pyc
 include/
 local/
 tests/__pycache__/

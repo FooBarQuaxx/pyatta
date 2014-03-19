@@ -28,3 +28,10 @@ def get_config_params(section, key):
     config = ConfigParser.SafeConfigParser()
     config.readfp(open(os.path.join(PROJECT_PATH, CONFIG_FILE_NAME)))
     return config.get(section, key)
+
+def clean_environ(env):
+    """
+    Delete envionment variables from system.
+    """
+    for key in env.keys():
+        if os.environ.get('key'): del os.environ[key]

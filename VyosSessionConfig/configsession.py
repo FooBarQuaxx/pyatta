@@ -1,6 +1,6 @@
 import os
 from uuid import uuid4
-from utils import get_config_params, _run
+from utils import get_config_params, _run, clean_environ
 
 VYOS_SHELL_API = get_config_params('bin','shell_api_path')
 
@@ -22,7 +22,8 @@ class Session(object):
 class ConfigSession(Session):
     """
     Create and manage a Vyos config session.
-    To create instance call setup_config_session() method.
+    This is a singleton subclass of Session class which ensures that one and one config session only is opened.
+    To create instance you have to call setup_config_session() method.
     """
 
     def setup_config_session(self):
@@ -45,7 +46,7 @@ class ConfigSession(Session):
         # Spawn shell and setup vyos config session
         if _run('{} setupSession'.format(VYOS_SHELL_API)):
             # Unset vyos session environment and raise an exception
-            for key in env.keys(): del os.environ[key]
+            clean_environ(env)
             raise SetupSessionFailed('[ERROR] Could not create session !')
         self.session_id = identifier
         self.session_envs = env
@@ -62,5 +63,5 @@ class ConfigSession(Session):
         End current configuration session.
         """
         _run('{} teardownSession'.format(VYOS_SHELL_API))
-        for key in self.session_envs.keys(): del os.environ[key]
+        clean_environ(self.session_envs)
         return True

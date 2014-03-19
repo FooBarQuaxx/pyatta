@@ -1,4 +1,4 @@
-*.pyc
+VyosSessionConfig/*.pyc
 bin/
 lib/
 include/

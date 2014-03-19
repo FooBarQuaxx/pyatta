@@ -1,7 +1,0 @@
-[bin]
-vyatta_sbin_dir = /opt/vyatta/sbin
-shell_api_path = /bin/cli-shell-api
-
-[log]
-filename=pyatta.log
-level=INFO

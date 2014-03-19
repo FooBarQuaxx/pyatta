@@ -2,7 +2,8 @@ import ConfigParser
 import subprocess
 import os
 
-PROJECT_PATH = "/home/vyos/vyos-api"
+# In production environment PROJECT_PATH should be /etc/pyatta/
+PROJECT_PATH = "/home/vyos/vyos-api/"
 CONFIG_FILE_NAME = "pyatta.conf"
 
 def _run(cmd, output=False):
@@ -18,7 +19,7 @@ def _run(cmd, output=False):
     try:
         out = subprocess.check_call(cmd, shell=True) # returns 0 for True
     except subprocess.CalledProcessError:
-        out = 1
+        out = 1 # returns 1 for False
     return out
 
 def get_config_params(section, key):
@@ -31,7 +32,7 @@ def get_config_params(section, key):
 
 def clean_environ(env):
     """
-    Delete envionment variables from system.
+    Delete some envionment variables from system.
     """
     for key in env.keys():
         if os.environ.get('key'): del os.environ[key]

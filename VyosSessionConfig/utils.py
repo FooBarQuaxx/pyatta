@@ -15,7 +15,7 @@ def _run(cmd, output=False):
             out = subprocess.check_output(cmd, shell=True)
         except subprocess.CalledProcessError:
             out = False
-            return out
+        return out
     try:
         out = subprocess.check_call(cmd, shell=True) # returns 0 for True
     except subprocess.CalledProcessError:

@@ -2,10 +2,13 @@ import os
 from uuid import uuid4
 from utils import get_config_params, _run, clean_environ
 
-VYOS_SHELL_API = get_config_params('bin','shell_api_path')
+VYOS_SHELL_API = get_config_params('bin', 'shell_api_path')
+VYOS_SBIN_DIR = get_config_params('bin', 'vyos_sbin_dir')
+VYOS_SAVE_SCRIPT = 'vyatta-save-config.pl'
 
 class SessionAlreadyExists(Exception): pass
 class SetupSessionFailed(Exception): pass
+class OperationFailed(Exception): pass
 
 class Session(object):
     """
@@ -56,7 +59,7 @@ class ConfigSession(Session):
         """
         Test if a vyos config session is set up
         """
-        return True if _run('{} inSession'.format(VYOS_SHELL_API)) == 0 else False
+        return False if _run('{} inSession'.format(VYOS_SHELL_API)) else True
 
     def teardown_config_session(self):
         """
@@ -65,3 +68,36 @@ class ConfigSession(Session):
         _run('{} teardownSession'.format(VYOS_SHELL_API))
         clean_environ(self.session_envs)
         return True
+
+    def session_changed(self):
+        """
+        Returns if Vyos configuration was changed from current session
+        """
+        return False if _run('{} sessionChanged'.format(VYOS_SHELL_API)) else True
+
+    def commit(self):
+        """
+        Returns True if commit action succeed. False otherwise.
+        """
+        out = _run(os.path.join(VYOS_SBIN_DIR ,'my_commit'), output=True)
+        if out == False:
+            raise OperationFailed('[ERROR] Commit changes failed !')
+        return True
+
+    def discard(self):
+        """
+        Undo config modifications
+        """
+        out = _run(os.path.join(VYOS_SBIN_DIR ,'my_discard'), output=True)
+        if out == False:
+            raise OperationFailed('[ERROR] Discard changes failed !')
+        return out.splitlines()[0]
+
+    def save(self):
+        """
+        Save applied modifications. Changes still persistent even after system reboot.
+        """
+        out = _run(os.path.join(VYOS_SBIN_DIR, VYOS_SAVE_SCRIPT), output=True)
+        if out == False:
+            raise OperationFailed('[ERROR] Save changes failed !')
+        return out.splitlines()[1]

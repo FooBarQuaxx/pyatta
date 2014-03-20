@@ -70,3 +70,31 @@ def test_inSession():
     """
     global sessionCfg
     assert sessionCfg.session_exists() == True
+
+def test_session_changed():
+    """
+    Test if configuration was changed from current session
+    """
+    assert sessionCfg.session_changed() == False
+
+def test_discard_changes():
+    """
+    Test if discard action undo last config modifications.
+    """
+    assert sessionCfg.discard() == 'No changes have been discarded'
+
+def test_commit():
+    """
+    Test if changes are successfully commited
+    """
+    utils._run('/opt/vyatta/sbin/my_set interfaces ethernet eth5 description "This is a LAN interface"')
+    #with pytest.raises(vsc.OperationFailed) as e:
+    #    sessionCfg.commit()
+    #assert 'ERROR' in e.message.value
+    assert sessionCfg.commit() == True
+
+def test_save_changes():
+    """
+    Test if changes are successfully saved in system.
+    """
+    assert sessionCfg.save().lower() == 'done'

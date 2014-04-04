@@ -1,3 +1,4 @@
-VyosSessionConfig/*.pyc
-lib/*/*.pyc
+*.pyc
+*.log
 tests/__pycache__/
+virtualenv/
